@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `marid` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, marid">
+
+    <title>marid - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'marid', ty: 'mod', relpath: '../'};</script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>marid</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-0' class='srclink' href='../src/marid/lib.rs.html#1-41' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Marid</p>
+
+<p>A process orchestration library</p>
+</div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='test_helpers/index.html'
+                               title='marid::test_helpers'>test_helpers</a></td>
+                        <td class='docblock short'>
+                             <p>A testing module for Runner/Process traits.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Composer.html'
+                               title='marid::Composer'>Composer</a></td>
+                        <td class='docblock short'>
+                             <p>The Composer will start each runner inside of its own thread when the run() function
+is called. The current behavior is an ordered setup/run, but in the future a parallel
+startup mode will be offered.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.MaridProcess.html'
+                               title='marid::MaridProcess'>MaridProcess</a></td>
+                        <td class='docblock short'>
+                             <p>Signifying the running state of a unit of work, a MaridProcess will spawn a
+new thread in order to not block the current thread.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Receiver.html'
+                               title='marid::Receiver'>Receiver</a></td>
+                        <td class='docblock short'>
+                             <p>The receiving half of a channel.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Sender.html'
+                               title='marid::Sender'>Sender</a></td>
+                        <td class='docblock short'>
+                             <p>The sending half of a channel.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.ProcessError.html'
+                               title='marid::ProcessError'>ProcessError</a></td>
+                        <td class='docblock short'>
+                             <p>Error type for a running Process.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.Signal.html'
+                               title='marid::Signal'>Signal</a></td>
+                        <td class='docblock short'>
+                             <p>The set of subscribable signals.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Process.html'
+                               title='marid::Process'>Process</a></td>
+                        <td class='docblock short'>
+                             <p>A Process represents are running unit of work. It can be signaled and waited on.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Runner.html'
+                               title='marid::Runner'>Runner</a></td>
+                        <td class='docblock short'>
+                             <p>A type implementing the Runner trait has the job of performing some arbitrary
+work while waiting for a signal indication shutdown. Upon receiving that
+defined shutdown Signal, the Runner must exit in a finite period of time.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.launch.html'
+                               title='marid::launch'>launch</a></td>
+                        <td class='docblock short'>
+                             <p>This function will start the specified runner as well as listen on the specified
+signals.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.MaridError.html'
+                               title='marid::MaridError'>MaridError</a></td>
+                        <td class='docblock short'>
+                             <p>Error type for Marid Runners.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='impls' class='section-header'><a href="#impls">Implementations</a></h2>
+<table></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "marid";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>

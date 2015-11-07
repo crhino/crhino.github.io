@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Composer","The Composer will start each runner inside of its own thread when the run() function is called. The current behavior is an ordered setup/run, but in the future a parallel startup mode will be offered."]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["BroadcastError","Error from broadcast module."]],"fn":[["broadcast_channel","Create a (Broadcast<T>, Consumer<T>) pair."]],"struct":[["Broadcast","Struct that sends message on a broadcast pattern."],["Consumer","Struct that receives messages from Broadcast."]]});

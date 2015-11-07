@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["TestProcess","A test struct that implements the Process trait."],["TestRunner","A test struct that implements the Runner trait."]]});

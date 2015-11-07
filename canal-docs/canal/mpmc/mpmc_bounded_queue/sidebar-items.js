@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["LockFreeQueue","A lock-free queue that is thread-safe for multiple producers and multiple consumers."]]});
