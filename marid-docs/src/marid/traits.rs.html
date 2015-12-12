@@ -107,6 +107,10 @@
 <span id="65">65</span>
 <span id="66">66</span>
 <span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
 </pre><pre class='rust '>
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chan_signal</span>::<span class='ident'>Signal</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chan</span>::{<span class='ident'>Sender</span>, <span class='ident'>Receiver</span>};
@@ -116,10 +120,13 @@
 <span class='doccomment'>/// work while waiting for a signal indication shutdown. Upon receiving that</span>
 <span class='doccomment'>/// defined shutdown Signal, the Runner must exit in a finite period of time.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Runner</span> {
-    <span class='doccomment'>/// The run function is called when a user wants to perform work.</span>
+    <span class='doccomment'>/// Performs work for an indefinite amount of time.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// The Box&lt;Self&gt; form is used here in order to allow Process types the ability to run</span>
+    <span class='doccomment'>/// different types of Runners at once.</span>
     <span class='kw'>fn</span> <span class='ident'>run</span>(<span class='self'>self</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>, <span class='ident'>signals</span>: <span class='ident'>Receiver</span><span class='op'>&lt;</span><span class='ident'>Signal</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>MaridError</span><span class='op'>&gt;</span>;
 
-    <span class='doccomment'>/// The setup function is called when a user wants to get ready to work.</span>
+    <span class='doccomment'>/// Used to do any setup work necessary for the Runner.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// This function should only complete once the type is ready to be run,</span>
     <span class='doccomment'>/// and must complete in a finite period of time.</span>
@@ -139,7 +146,8 @@
     <span class='kw'>fn</span> <span class='ident'>wait</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Self</span>::<span class='ident'>Error</span><span class='op'>&gt;</span>;
     <span class='doccomment'>/// This function will signal the running Process with the specified signal.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// This is a non-blocking function.</span>
+    <span class='doccomment'>/// ### Warnings</span>
+    <span class='doccomment'>/// This must be a non-blocking function.</span>
     <span class='kw'>fn</span> <span class='ident'>signal</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>signal</span>: <span class='ident'>Signal</span>);
 }
 

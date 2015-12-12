@@ -45,7 +45,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-18' class='srclink' href='../src/marid/traits.rs.html#20-34' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-18' class='srclink' href='../src/marid/traits.rs.html#23-38' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Process {
     type Error;
     fn <a href='#tymethod.ready' class='fnname'>ready</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, Self::<a class='trait' href='../marid/trait.Process.html' title='marid::Process'>Error</a>&gt;;
@@ -65,7 +65,8 @@ is ready to run.</p>
 failure.</p>
 </div><h3 id='tymethod.signal' class='method stab '><code>fn <a href='#tymethod.signal' class='fnname'>signal</a>(&amp;self, signal: <a class='enum' href='../marid/enum.Signal.html' title='marid::Signal'>Signal</a>)</code></h3><div class='docblock'><p>This function will signal the running Process with the specified signal.</p>
 
-<p>This is a non-blocking function.</p>
+<h3 id='warnings' class='section-header'><a href='#warnings'>Warnings</a></h3>
+<p>This must be a non-blocking function.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>

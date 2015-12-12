@@ -288,7 +288,7 @@
     <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>fmt</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>ProcessError</span>::<span class='ident'>RunnerError</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> {
-                <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>fmt</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>.<span class='ident'>description</span>())
+                <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>fmt</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>)
             },
             <span class='ident'>ProcessError</span>::<span class='ident'>ResultAlreadyGiven</span> <span class='op'>=&gt;</span> {
                 <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>fmt</span>, <span class='string'>&quot;Already returned result to caller&quot;</span>)
@@ -338,8 +338,8 @@
 
 <span class='comment'>// Be aware, ready/wait</span>
 <span class='kw'>impl</span> <span class='ident'>MaridProcess</span> {
-    <span class='doccomment'>/// Create a new MaridProcess process.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>runner</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Runner</span> <span class='op'>+</span> <span class='ident'>Send</span><span class='op'>&gt;</span>, <span class='ident'>signaler</span>: <span class='ident'>Sender</span><span class='op'>&lt;</span><span class='ident'>Signal</span><span class='op'>&gt;</span>, <span class='ident'>recv</span>: <span class='ident'>Receiver</span><span class='op'>&lt;</span><span class='ident'>Signal</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>MaridProcess</span> {
+    <span class='doccomment'>/// Starts the specified runner with the given signal receiver.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>start</span>(<span class='ident'>runner</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Runner</span> <span class='op'>+</span> <span class='ident'>Send</span><span class='op'>&gt;</span>, <span class='ident'>signaler</span>: <span class='ident'>Sender</span><span class='op'>&lt;</span><span class='ident'>Signal</span><span class='op'>&gt;</span>, <span class='ident'>recv</span>: <span class='ident'>Receiver</span><span class='op'>&lt;</span><span class='ident'>Signal</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>MaridProcess</span> {
         <span class='kw'>let</span> (<span class='ident'>setup_sn</span>, <span class='ident'>setup_rc</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>channel</span>();
         <span class='kw'>let</span> (<span class='ident'>run_sn</span>, <span class='ident'>run_rc</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>channel</span>();
 
@@ -427,7 +427,7 @@
         <span class='kw'>let</span> <span class='ident'>runner</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>TestRunner</span>::<span class='ident'>new</span>(<span class='number'>0</span>, <span class='ident'>sn</span>)) <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Runner</span> <span class='op'>+</span> <span class='ident'>Send</span><span class='op'>&gt;</span>;
 
         <span class='kw'>let</span> (<span class='ident'>signal_sn</span>, <span class='ident'>signal_rc</span>) <span class='op'>=</span> <span class='ident'>chan</span>::<span class='ident'>sync</span>(<span class='number'>9</span>);
-        <span class='kw'>let</span> <span class='ident'>process</span> <span class='op'>=</span> <span class='ident'>MaridProcess</span>::<span class='ident'>new</span>(<span class='ident'>runner</span>, <span class='ident'>signal_sn</span>, <span class='ident'>signal_rc</span>);
+        <span class='kw'>let</span> <span class='ident'>process</span> <span class='op'>=</span> <span class='ident'>MaridProcess</span>::<span class='ident'>start</span>(<span class='ident'>runner</span>, <span class='ident'>signal_sn</span>, <span class='ident'>signal_rc</span>);
         <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>process</span>.<span class='ident'>ready</span>();
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>res</span>.<span class='ident'>is_ok</span>());
 
@@ -451,7 +451,7 @@
         <span class='kw'>let</span> <span class='ident'>runner</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>TestRunner</span>::<span class='ident'>new</span>(<span class='number'>0</span>, <span class='ident'>sn</span>)) <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Runner</span> <span class='op'>+</span> <span class='ident'>Send</span><span class='op'>&gt;</span>;
 
         <span class='kw'>let</span> (<span class='ident'>signal_sn</span>, <span class='ident'>signal_rc</span>) <span class='op'>=</span> <span class='ident'>chan</span>::<span class='ident'>sync</span>(<span class='number'>9</span>);
-        <span class='kw'>let</span> <span class='ident'>process</span> <span class='op'>=</span> <span class='ident'>MaridProcess</span>::<span class='ident'>new</span>(<span class='ident'>runner</span>, <span class='ident'>signal_sn</span>, <span class='ident'>signal_rc</span>);
+        <span class='kw'>let</span> <span class='ident'>process</span> <span class='op'>=</span> <span class='ident'>MaridProcess</span>::<span class='ident'>start</span>(<span class='ident'>runner</span>, <span class='ident'>signal_sn</span>, <span class='ident'>signal_rc</span>);
         <span class='ident'>process</span>.<span class='ident'>signal</span>(<span class='ident'>Signal</span>::<span class='ident'>INT</span>);
 
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>rc</span>.<span class='ident'>recv</span>().<span class='ident'>unwrap</span>()); <span class='comment'>// rendevous channel goes first</span>

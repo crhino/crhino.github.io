@@ -1,0 +1,1 @@
+initSidebarItems({"type":[["FnRunner","A Runner type that is constructed with a FnOnce closure."]]});

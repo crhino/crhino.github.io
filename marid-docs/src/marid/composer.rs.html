@@ -230,6 +230,48 @@
 <span id="188">188</span>
 <span id="189">189</span>
 <span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>crossbeam</span>;
 <span class='kw'>use</span> <span class='ident'>traits</span>::{<span class='ident'>Runner</span>, <span class='ident'>Signal</span>, <span class='ident'>Receiver</span>, <span class='ident'>Sender</span>};
@@ -238,12 +280,15 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::{<span class='ident'>Arc</span>, <span class='ident'>Mutex</span>};
 
+<span class='doccomment'>/// The Composer type.</span>
+<span class='doccomment'>///</span>
 <span class='doccomment'>/// The Composer will start each runner inside of its own thread when the run() function</span>
 <span class='doccomment'>/// is called. The current behavior is an ordered setup/run, but in the future a parallel</span>
 <span class='doccomment'>/// startup mode will be offered.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Composer</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span> {
     <span class='ident'>runners</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span>,
     <span class='ident'>state</span>: <span class='ident'>State</span>,
+    <span class='ident'>error_signal</span>: <span class='ident'>Signal</span>,
 }
 
 <span class='kw'>enum</span> <span class='ident'>State</span> {
@@ -253,10 +298,14 @@
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span> <span class='ident'>Composer</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// Creates a new Composer.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>runners</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Composer</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span> {
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// The error_signal is the Signal that the Composer will send to</span>
+    <span class='doccomment'>/// runners when another runner in the group has finished with an error.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>runners</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span>, <span class='ident'>error_signal</span>: <span class='ident'>Signal</span>) <span class='op'>-&gt;</span> <span class='ident'>Composer</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span> {
         <span class='ident'>Composer</span>{
             <span class='ident'>runners</span>: <span class='ident'>runners</span>,
             <span class='ident'>state</span>: <span class='ident'>State</span>::<span class='ident'>Init</span>,
+            <span class='ident'>error_signal</span>: <span class='ident'>error_signal</span>,
         }
     }
 
@@ -279,21 +328,29 @@
             _ <span class='op'>=&gt;</span> {},
         }
 
+        <span class='kw'>let</span> <span class='ident'>error_signal</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>error_signal</span>;
         <span class='kw'>let</span> (<span class='ident'>runners_vec</span>, <span class='ident'>sender_vec</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>take_runners_and_setup_signal_chan</span>();
         <span class='kw'>let</span> (<span class='ident'>stop_sn</span>, <span class='ident'>stop_rc</span>) <span class='op'>=</span> <span class='ident'>chan</span>::<span class='ident'>sync</span>(<span class='number'>0</span>);
-        <span class='kw'>let</span> <span class='ident'>signaling</span> <span class='op'>=</span> <span class='ident'>signaling_thread</span>(<span class='ident'>signals</span>, <span class='ident'>sender_vec</span>, <span class='ident'>stop_rc</span>);
+        <span class='kw'>let</span> (<span class='ident'>error_sn</span>, <span class='ident'>error_rc</span>) <span class='op'>=</span> <span class='ident'>chan</span>::<span class='ident'>sync</span>(<span class='number'>1</span>);
+        <span class='kw'>let</span> <span class='ident'>signaling</span> <span class='op'>=</span> <span class='ident'>signaling_thread</span>(<span class='ident'>signals</span>,
+                                         <span class='ident'>sender_vec</span>,
+                                         <span class='ident'>stop_rc</span>,
+                                         <span class='ident'>error_signal</span>,
+                                         <span class='ident'>error_rc</span>);
         <span class='kw'>let</span> <span class='ident'>error</span> <span class='op'>=</span> <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>Mutex</span>::<span class='ident'>new</span>(<span class='prelude-val'>None</span>));
         <span class='kw'>let</span> <span class='ident'>error_clone</span> <span class='op'>=</span> <span class='ident'>error</span>.<span class='ident'>clone</span>();
 
         <span class='ident'>crossbeam</span>::<span class='ident'>scope</span>(<span class='op'>|</span><span class='ident'>scope</span><span class='op'>|</span> {
             <span class='kw'>for</span> (<span class='ident'>r</span>, <span class='ident'>rc</span>) <span class='kw'>in</span> <span class='ident'>runners_vec</span>.<span class='ident'>into_iter</span>() {
                 <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='ident'>error_clone</span>.<span class='ident'>clone</span>();
+                <span class='kw'>let</span> <span class='ident'>err_sn</span> <span class='op'>=</span> <span class='ident'>error_sn</span>.<span class='ident'>clone</span>();
                 <span class='ident'>scope</span>.<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> {
                     <span class='kw'>match</span> <span class='ident'>r</span>.<span class='ident'>run</span>(<span class='ident'>rc</span>) {
                         <span class='prelude-val'>Ok</span>(()) <span class='op'>=&gt;</span> {},
                         <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> {
                             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>guard</span> <span class='op'>=</span> <span class='ident'>err</span>.<span class='ident'>lock</span>().<span class='ident'>unwrap</span>();
                             <span class='op'>*</span><span class='ident'>guard</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>e</span>);
+                            <span class='ident'>err_sn</span>.<span class='ident'>send</span>(<span class='boolval'>true</span>);
                         },
                     }
                 });
@@ -323,7 +380,9 @@
 
 <span class='kw'>fn</span> <span class='ident'>signaling_thread</span>(<span class='ident'>signals</span>: <span class='ident'>Receiver</span><span class='op'>&lt;</span><span class='ident'>Signal</span><span class='op'>&gt;</span>,
                     <span class='ident'>senders</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Sender</span><span class='op'>&lt;</span><span class='ident'>Signal</span><span class='op'>&gt;&gt;</span>,
-                    <span class='ident'>quit</span>: <span class='ident'>Receiver</span><span class='op'>&lt;</span><span class='ident'>bool</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>thread</span>::<span class='ident'>JoinHandle</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+                    <span class='ident'>quit</span>: <span class='ident'>Receiver</span><span class='op'>&lt;</span><span class='ident'>bool</span><span class='op'>&gt;</span>,
+                    <span class='ident'>error_signal</span>: <span class='ident'>Signal</span>,
+                    <span class='ident'>error</span>: <span class='ident'>Receiver</span><span class='op'>&lt;</span><span class='ident'>bool</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>thread</span>::<span class='ident'>JoinHandle</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
     <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> {
         <span class='kw'>loop</span> {
             <span class='macro'>chan_select</span><span class='macro'>!</span> {
@@ -337,6 +396,11 @@
                         <span class='ident'>sn</span>.<span class='ident'>send</span>(<span class='ident'>sig</span>);
                     }
                 },
+                <span class='ident'>error</span>.<span class='ident'>recv</span>() <span class='op'>=&gt;</span> {
+                    <span class='kw'>for</span> <span class='ident'>sn</span> <span class='kw'>in</span> <span class='ident'>senders</span>.<span class='ident'>iter</span>() {
+                        <span class='ident'>sn</span>.<span class='ident'>send</span>(<span class='ident'>error_signal</span>);
+                    }
+                },
                 <span class='ident'>quit</span>.<span class='ident'>recv</span>() <span class='op'>=&gt;</span> {
                     <span class='kw'>return</span>
                 }
@@ -347,8 +411,9 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
-    <span class='kw'>use</span> <span class='ident'>test_helpers</span>::{<span class='ident'>TestRunner</span>};
-    <span class='kw'>use</span> {<span class='ident'>Composer</span>, <span class='ident'>Runner</span>, <span class='ident'>Signal</span>};
+    <span class='kw'>use</span> <span class='ident'>test_helpers</span>::{<span class='ident'>TestRunner</span>, <span class='ident'>TestError</span>};
+    <span class='kw'>use</span> {<span class='ident'>Composer</span>, <span class='ident'>Runner</span>, <span class='ident'>Signal</span>, <span class='ident'>MaridError</span>};
+    <span class='kw'>use</span> <span class='ident'>thunk</span>::<span class='ident'>Thunk</span>;
     <span class='kw'>use</span> <span class='ident'>chan</span>;
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>;
 
@@ -361,7 +426,7 @@
 
         <span class='kw'>let</span> (<span class='ident'>sig_send</span>, <span class='ident'>signals</span>) <span class='op'>=</span> <span class='ident'>chan</span>::<span class='ident'>async</span>();
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>composer</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Composer</span>::<span class='ident'>new</span>(<span class='macro'>vec</span><span class='macro'>!</span>(<span class='ident'>runner1</span>, <span class='ident'>runner2</span>)));
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>composer</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Composer</span>::<span class='ident'>new</span>(<span class='macro'>vec</span><span class='macro'>!</span>(<span class='ident'>runner1</span>, <span class='ident'>runner2</span>), <span class='ident'>Signal</span>::<span class='ident'>INT</span>));
         <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>composer</span>.<span class='ident'>setup</span>();
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>res</span>.<span class='ident'>is_ok</span>());
 
@@ -385,7 +450,7 @@
 
         <span class='kw'>let</span> (<span class='ident'>sig_send</span>, <span class='ident'>signals</span>) <span class='op'>=</span> <span class='ident'>chan</span>::<span class='ident'>async</span>();
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>composer</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Composer</span>::<span class='ident'>new</span>(<span class='macro'>vec</span><span class='macro'>!</span>(<span class='ident'>runner1</span>, <span class='ident'>runner2</span>)));
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>composer</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Composer</span>::<span class='ident'>new</span>(<span class='macro'>vec</span><span class='macro'>!</span>(<span class='ident'>runner1</span>, <span class='ident'>runner2</span>), <span class='ident'>Signal</span>::<span class='ident'>INT</span>));
         <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>composer</span>.<span class='ident'>setup</span>();
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>res</span>.<span class='ident'>is_ok</span>());
 
@@ -401,6 +466,25 @@
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>test_composer_error_inside_runner</span>() {
+        <span class='kw'>let</span> (<span class='ident'>sn</span>, <span class='ident'>_rc</span>) <span class='op'>=</span> <span class='ident'>chan</span>::<span class='ident'>sync</span>(<span class='number'>2</span>);
+
+        <span class='kw'>let</span> <span class='ident'>runner1</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>TestRunner</span>::<span class='ident'>new</span>(<span class='number'>1</span>, <span class='ident'>sn</span>)) <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Runner</span> <span class='op'>+</span> <span class='ident'>Send</span><span class='op'>&gt;</span>;
+        <span class='kw'>let</span> <span class='ident'>runner2</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Thunk</span>::<span class='ident'>with_arg</span>(<span class='kw'>move</span> <span class='op'>|</span><span class='ident'>_sigs</span><span class='op'>|</span> {
+            <span class='prelude-val'>Err</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>TestError</span>) <span class='kw'>as</span> <span class='ident'>MaridError</span>)
+        })) <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Runner</span> <span class='op'>+</span> <span class='ident'>Send</span><span class='op'>&gt;</span>;
+
+        <span class='kw'>let</span> (<span class='ident'>_sig_send</span>, <span class='ident'>signals</span>) <span class='op'>=</span> <span class='ident'>chan</span>::<span class='ident'>async</span>();
+
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>composer</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Composer</span>::<span class='ident'>new</span>(<span class='macro'>vec</span><span class='macro'>!</span>(<span class='ident'>runner1</span>, <span class='ident'>runner2</span>), <span class='ident'>Signal</span>::<span class='ident'>INT</span>));
+        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>composer</span>.<span class='ident'>setup</span>();
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>res</span>.<span class='ident'>is_ok</span>());
+
+        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>composer</span>.<span class='ident'>run</span>(<span class='ident'>signals</span>);
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>res</span>.<span class='ident'>is_err</span>());
+    }
+
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_composer_run_no_setup</span>() {
         <span class='kw'>let</span> (<span class='ident'>sn</span>, <span class='ident'>rc</span>) <span class='op'>=</span> <span class='ident'>chan</span>::<span class='ident'>sync</span>(<span class='number'>2</span>);
 
@@ -409,7 +493,7 @@
 
         <span class='kw'>let</span> (<span class='ident'>sig_send</span>, <span class='ident'>signals</span>) <span class='op'>=</span> <span class='ident'>chan</span>::<span class='ident'>async</span>();
 
-        <span class='kw'>let</span> <span class='ident'>composer</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Composer</span>::<span class='ident'>new</span>(<span class='macro'>vec</span><span class='macro'>!</span>(<span class='ident'>runner1</span>, <span class='ident'>runner2</span>)));
+        <span class='kw'>let</span> <span class='ident'>composer</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Composer</span>::<span class='ident'>new</span>(<span class='macro'>vec</span><span class='macro'>!</span>(<span class='ident'>runner1</span>, <span class='ident'>runner2</span>), <span class='ident'>Signal</span>::<span class='ident'>INT</span>));
         <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> {
             <span class='ident'>sig_send</span>.<span class='ident'>send</span>(<span class='ident'>Signal</span>::<span class='ident'>INT</span>);
         });

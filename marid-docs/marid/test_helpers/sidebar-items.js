@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["TestProcess","A test struct that implements the Process trait."],["TestRunner","A test struct that implements the Runner trait."]]});
+initSidebarItems({"struct":[["TestError","Error type for testing"],["TestProcess","A test struct that implements the Process trait."],["TestRunner","A test struct that implements the Runner trait."]]});

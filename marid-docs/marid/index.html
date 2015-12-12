@@ -45,10 +45,47 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/marid/lib.rs.html#1-41' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/marid/lib.rs.html#1-84' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Marid</p>
 
-<p>A process orchestration library</p>
+<p>A process orchestration library.</p>
+
+<p>This library is influenced by <a href="https://github.com/tedsuo/ifrit">tedsuo&#39;s ifrit</a>, a similar
+library for Golang.</p>
+
+<p>The foundation of the library is built on the idea of a <code>Runner</code> trait, which
+encapsulates a singular unit of work, e.g. a thread, which is has a long lifetime, potentially
+forever. The <code>Process</code> is a trait that defines the actual running of one or more <code>Runner</code>
+objects. Importantly, a <code>Process</code> defines the ability to wait for, and signal a
+<code>Runner</code>.</p>
+
+<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1><pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>marid</span>::{<span class='ident'>launch</span>, <span class='ident'>Runner</span>, <span class='ident'>Process</span>, <span class='ident'>Composer</span>, <span class='ident'>FnRunner</span>, <span class='ident'>Signal</span>};
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>runner1</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>FnRunner</span>::<span class='ident'>new</span>(<span class='kw'>move</span> <span class='op'>|</span><span class='ident'>_sig</span><span class='op'>|</span> {
+    <span class='comment'>// Do a bunch of work...</span>
+    <span class='prelude-val'>Ok</span>(())
+})) <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Runner</span> <span class='op'>+</span> <span class='ident'>Send</span><span class='op'>&gt;</span>;
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>runner2</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>FnRunner</span>::<span class='ident'>new</span>(<span class='kw'>move</span> <span class='op'>|</span><span class='ident'>_sig</span><span class='op'>|</span> {
+    <span class='comment'>// Do a bunch of other work...</span>
+    <span class='prelude-val'>Ok</span>(())
+})) <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Runner</span> <span class='op'>+</span> <span class='ident'>Send</span><span class='op'>&gt;</span>;
+
+<span class='kw'>let</span> <span class='ident'>composer</span> <span class='op'>=</span> <span class='ident'>Composer</span>::<span class='ident'>new</span>(<span class='macro'>vec</span><span class='macro'>!</span>(<span class='ident'>runner1</span>, <span class='ident'>runner2</span>), <span class='ident'>Signal</span>::<span class='ident'>INT</span>);
+<span class='kw'>let</span> <span class='ident'>signals</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='ident'>Signal</span>::<span class='ident'>INT</span>, <span class='ident'>Signal</span>::<span class='ident'>ALRM</span>);
+
+<span class='comment'>// Start all Runners in separate threads.</span>
+<span class='kw'>let</span> <span class='ident'>process</span> <span class='op'>=</span> <span class='ident'>launch</span>(<span class='ident'>composer</span>, <span class='ident'>signals</span>);
+
+<span class='comment'>// Wait until all Runners have been setup.</span>
+<span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>process</span>.<span class='ident'>ready</span>().<span class='ident'>is_ok</span>());
+
+<span class='comment'>// Send a shutdown signal to all Runners.</span>
+<span class='ident'>process</span>.<span class='ident'>signal</span>(<span class='ident'>Signal</span>::<span class='ident'>INT</span>);
+
+<span class='comment'>// Wait until all Runners have finished.</span>
+<span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>process</span>.<span class='ident'>wait</span>().<span class='ident'>is_ok</span>());</pre>
 </div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                     <tr class=' module-item'>
@@ -65,9 +102,7 @@
                         <td><a class='struct' href='struct.Composer.html'
                                title='marid::Composer'>Composer</a></td>
                         <td class='docblock short'>
-                             <p>The Composer will start each runner inside of its own thread when the run() function
-is called. The current behavior is an ordered setup/run, but in the future a parallel
-startup mode will be offered.</p>
+                             <p>The Composer type.</p>
 
                         </td>
                     </tr>
@@ -145,13 +180,21 @@ defined shutdown Signal, the Runner must exit in a finite period of time.</p>
                         <td><a class='fn' href='fn.launch.html'
                                title='marid::launch'>launch</a></td>
                         <td class='docblock short'>
-                             <p>This function will start the specified runner as well as listen on the specified
-signals.</p>
+                             <p>Launch the specified runner as well as listen on the specified signals.</p>
 
                         </td>
                     </tr>
                 </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
 <table>
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.FnRunner.html'
+                               title='marid::FnRunner'>FnRunner</a></td>
+                        <td class='docblock short'>
+                             <p>A Runner type that is constructed with a FnOnce closure.</p>
+
+                        </td>
+                    </tr>
+                
                     <tr class=' module-item'>
                         <td><a class='type' href='type.MaridError.html'
                                title='marid::MaridError'>MaridError</a></td>

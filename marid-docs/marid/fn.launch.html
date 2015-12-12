@@ -45,11 +45,10 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-242' class='srclink' href='../src/marid/lib.rs.html#30-38' title='goto source code'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn launch&lt;R&gt;(runner: R, signals: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../marid/enum.Signal.html' title='marid::Signal'>Signal</a>&gt;) -&gt; <a class='struct' href='../marid/struct.MaridProcess.html' title='marid::MaridProcess'>MaridProcess</a> <span class='where'>where R: <a class='trait' href='../marid/trait.Runner.html' title='marid::Runner'>Runner</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a> + 'static</span></pre><div class='docblock'><p>This function will start the specified runner as well as listen on the specified
-signals.</p>
+        </span><a id='src-309' class='srclink' href='../src/marid/lib.rs.html#73-81' title='goto source code'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn launch&lt;R&gt;(runner: R, signals: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../marid/enum.Signal.html' title='marid::Signal'>Signal</a>&gt;) -&gt; <a class='struct' href='../marid/struct.MaridProcess.html' title='marid::MaridProcess'>MaridProcess</a> <span class='where'>where R: <a class='trait' href='../marid/trait.Runner.html' title='marid::Runner'>Runner</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a> + 'static</span></pre><div class='docblock'><p>Launch the specified runner as well as listen on the specified signals.</p>
 
-<h1 id='warnings' class='section-header'><a href='#warnings'>Warnings</a></h1>
+<h1 id='safety' class='section-header'><a href='#safety'>Safety</a></h1>
 <p>This must be called before any threads are spawned in the process to
 ensure appropriate signal handling behavior.</p>
 </div></section>
