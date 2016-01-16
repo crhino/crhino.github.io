@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `dsl` mod in crate `ferrous`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, dsl">
+
+    <title>ferrous::dsl - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>ferrous</a></p><script>window.sidebarCurrent = {name: 'dsl', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>ferrous</a>::<wbr><a class='mod' href=''>dsl</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-5' class='srclink' href='../../src/ferrous/dsl/mod.rs.html#1-120' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>The DSL module for the ferrous crate.</p>
+
+<p>Usually, a user of this library would want to import all symbols from this module.</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>ferrous</span>::<span class='ident'>dsl</span>::<span class='op'>*</span>;
+
+<span class='ident'>expect</span>(<span class='kw-2'>&amp;</span><span class='number'>1</span>).<span class='ident'>to</span>(<span class='ident'>equal</span>(<span class='kw-2'>&amp;</span><span class='number'>1</span>));</pre>
+</div><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Assertion.html'
+                               title='ferrous::dsl::Assertion'>Assertion</a></td>
+                        <td class='docblock short'>
+                             <p>Trait for assertion types.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.AsyncAssertion.html'
+                               title='ferrous::dsl::AsyncAssertion'>AsyncAssertion</a></td>
+                        <td class='docblock short'>
+                             <p>Trait mapping to/not_to to should/should_not for better readability.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Matcher.html'
+                               title='ferrous::dsl::Matcher'>Matcher</a></td>
+                        <td class='docblock short'>
+                             <p>Trait that must be implemented by any matcher type.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.be_err.html'
+                               title='ferrous::dsl::be_err'>be_err</a></td>
+                        <td class='docblock short'>
+                             <p>Matcher that asserts a value is a Err variant.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.be_none.html'
+                               title='ferrous::dsl::be_none'>be_none</a></td>
+                        <td class='docblock short'>
+                             <p>Matcher that asserts a value is a None variant.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.be_ok.html'
+                               title='ferrous::dsl::be_ok'>be_ok</a></td>
+                        <td class='docblock short'>
+                             <p>Matcher that asserts a value is a Ok variant.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.be_some.html'
+                               title='ferrous::dsl::be_some'>be_some</a></td>
+                        <td class='docblock short'>
+                             <p>Matcher that asserts a value is a Some variant.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.consistently.html'
+                               title='ferrous::dsl::consistently'>consistently</a></td>
+                        <td class='docblock short'>
+                             <p>Asynchronous assertion that asserts the given closure <strong>consistently</strong> returns a value
+that satisfies the given matcher.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.consistently_with_timeout.html'
+                               title='ferrous::dsl::consistently_with_timeout'>consistently_with_timeout</a></td>
+                        <td class='docblock short'>
+                             <p>Asynchronous consistent assertion with user-defined timeout.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.contain.html'
+                               title='ferrous::dsl::contain'>contain</a></td>
+                        <td class='docblock short'>
+                             <p>Container matcher that asserts a given element exists within an iterator.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.equal.html'
+                               title='ferrous::dsl::equal'>equal</a></td>
+                        <td class='docblock short'>
+                             <p>Simple equality matcher</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.eventually.html'
+                               title='ferrous::dsl::eventually'>eventually</a></td>
+                        <td class='docblock short'>
+                             <p>Asynchronous assertion that asserts the given closure <strong>eventually</strong> returns a value
+that satisfies the given matcher.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.eventually_with_timeout.html'
+                               title='ferrous::dsl::eventually_with_timeout'>eventually_with_timeout</a></td>
+                        <td class='docblock short'>
+                             <p>Asynchronous eventual assertion with user-defined timeout.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.expect.html'
+                               title='ferrous::dsl::expect'>expect</a></td>
+                        <td class='docblock short'>
+                             <p>Simple expectation assertion.</p>
+
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "ferrous";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>
